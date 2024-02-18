@@ -1,0 +1,218 @@
+           @font-face {
+            font-family:House of montague ;
+            src: url(Font/HouseOfMontagueDEMO.otf);
+           }
+
+           @font-face {
+            font-family:Foglighten ;
+            src: url(Font/Foglihten-068.otf);
+           }
+           
+           body,html {
+             Margin: 0;
+             padding: 0;
+             height: 100%;
+             overflow:hidden;       
+            }
+            .page-content {
+                width: 700px;
+                top: 50%;
+                left: 50%;
+                transform: translate (-50%, -50%);
+                animation: fadeIn 0.5s ease-in-out;
+                line-height: 1.5;
+                font-family: Foglighten;
+                color: rgb(255, 255, 255);
+                font-size: 18;
+                margin-top: 5px;
+                display: inline-block;
+            }
+            @keyframes fadeIn {
+                0% { opacity: 0; }
+                100% {opacity: 1; }
+            }
+
+            .intro-text {
+                font-family: Foglighten;
+                color: rgb(255, 255, 255);
+                font-size: 18;
+                margin-top: 5px;
+                margin-left: 5px;
+                width: 700px;
+                text-align: center;
+            }
+           .CWE-heading{
+            text-align: center;
+            font-family: House of montague;
+            color: rgb(0, 0, 0);
+            transform: translate (-50%, -50%);
+            animation: fadeIn 0.5s ease-in-out;
+            margin-top: 10px;
+            margin-bottom: 15px;
+           }
+           .navbar ul {
+            list-style-type: none;
+            background-color:rgb(39,54,68);
+            padding: 0px;
+            margin: 0px;
+            overflow: hidden;
+            font-family: Foglighten;
+           }
+           .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+          display: block;
+            text-align: center;
+           }
+          .navbar a:hover{
+            color:rgb(221,235,242);
+          }
+           .navbar li {
+            float:left;
+           }
+           .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 15px;
+            display: block;
+            text-align: center;
+          }
+          .navbar a:hover{
+            color: rgb(152, 220, 254);
+          }
+           .navbar li {
+            float:left;
+           }
+
+           header{
+            background-color:  rgb(122,193,249);
+            color: #FFF;
+            Padding: 15px;
+           }
+          .logo {
+            font-size: 1.5em;
+          }
+            .type-cast-content{
+            width:1000px;
+            transform: translate (-50%, -50%);
+            animation: fadeIn 0.5s ease-in-out;
+            margin-left: 20px;
+            line-height: 1.5;
+            font-family: Foglighten;
+            color: rgb(255, 255, 255);
+            font-size: 18;
+            display: inline-block;
+           }
+           .Type-heading{
+            transform: translate (-50%, -50%);
+            animation: fadeIn 0.5s ease-in-out;
+            margin-left: 20px;
+            font-family: Foglighten;
+            color: #FFF;
+            font-size: 22;
+           }
+           .variable-content{
+            width:1000px;
+            transform: translate (-50%, -50%);
+            animation: fadeIn 0.5s ease-in-out;
+            margin-left: 20px;
+            line-height: 1.5;
+            font-family: Foglighten;
+            color:#FFF;
+            font-size: 18;
+            display: inline-block;
+           } 
+           .variable-heading{
+            transform: translate (-50%, -50%);
+            animation: fadeIn 0.5s ease-in-out;
+            margin-left: 20px;
+            font-family: Foglighten;
+            color: #FFF;
+            font-size: 22;
+           }
+           .loop-content {
+            width:1000px;
+            transform: translate (-50%, -50%);
+            animation: fadeIn 0.5s ease-in-out;
+            margin-left: 20px;
+            line-height: 1.5;
+            font-family: Foglighten;
+            color: #FFF;
+            font-size: 18px;
+            display: block;
+           }
+
+           .cwe-page {
+            background-color: rgb(122,193,249);
+            overflow-y: scroll;
+            overflow-x: scroll;
+           }
+           .loops-page{
+            background-color:rgb(122,193,249);
+            overflow-y: scroll;
+            overflow-x: scroll;
+           }
+           .type-cast-page{
+            background-color: rgb(122,193,249);
+            overflow-y: scroll;
+            overflow-x: scroll;
+           }
+           .Variables-page{
+            background-color: rgb(122,193,249);
+            overflow-y: scroll;
+            overflow-x: scroll;
+           }
+           .homepage-picture {
+            display: inline-block;
+            width: 650px;
+        }
+           .intro-container {
+            display: block;
+            align-items: center; 
+            grid-template-columns: 1fr 1fr 1fr;
+            column-gap: 5px;
+           }
+           .Video-settings {
+            display: inline-block;
+            position: absolute;
+            margin-top: 40px;
+            margin-left: 20px;
+            border-radius: 3px;
+            border-color: #FFF;
+            object-position: -20px;
+           }
+
+           .for_loops_vid {
+            display: inline-block;
+            margin-top: 40px;
+            margin-left:100px;
+            margin-right: 20px;
+            margin-bottom: 40px;
+            
+           }
+
+           .while_loops_vid {
+            display: inline-block;
+            margin-right: 20px; 
+            margin-bottom: 40px;
+        
+           }
+
+           .nested_loops_vid {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 40px;
+           }
+          
+/*-----custom scrollbar-----*/
+::-webkit-scrollbar{
+    width: 15px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(0, 132, 255, 0);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(243, 243, 243, 0.539);
+    border-radius: 10px;
+}
