@@ -103,9 +103,9 @@ class LifestyleScoreTests(unittest.TestCase):
 
 class FamilyHistoryTests(unittest.TestCase):
     def test_any_yes_relative_counts(self):
-        self.assertTrue(has_family_history(["No", "No", "Yes", "No"]))
-        self.assertFalse(has_family_history(["No", "No", "No", "No"]))
-        self.assertFalse(has_family_history(["yes", "No", "No", "No"]))
+        self.assertTrue(has_family_history(("No", "No", "Yes", "No")))
+        self.assertFalse(has_family_history(("No", "No", "No", "No")))
+        self.assertFalse(has_family_history(("yes", "No", "No", "No")))
 
     def test_only_no_diabetes_is_non_diabetic(self):
         self.assertFalse(is_diabetic("No Diabetes"))
@@ -118,10 +118,10 @@ class FamilyHistoryTests(unittest.TestCase):
             survey_row({90: "Yes"}),
         ]
         counts = count_rows(rows)
-        self.assertEqual(counts[0], 1)
-        self.assertEqual(counts[1], 0)
-        self.assertEqual(counts[2], 1)
-        self.assertEqual(counts[4], 0)
+        self.assertEqual(counts["family_history_count"], 1)
+        self.assertEqual(counts["diabetic_with_family_history"], 0)
+        self.assertEqual(counts["family_healthy"], 1)
+        self.assertEqual(counts["family_unhealthy"], 0)
 
     def test_splits_diabetic_relatives_by_lifestyle(self):
         healthy_diabetic = survey_row({90: "Yes", 208: "Type 2 Diabetes"})
@@ -134,21 +134,21 @@ class FamilyHistoryTests(unittest.TestCase):
         })
         healthy_clear = survey_row({93: "Yes"})
         counts = count_rows([healthy_diabetic, unhealthy, healthy_clear])
-        self.assertEqual(counts[0], 3)
-        self.assertEqual(counts[1], 2)
-        self.assertEqual(counts[2], 2)
-        self.assertEqual(counts[3], 1)
-        self.assertEqual(counts[4], 1)
-        self.assertEqual(counts[5], 1)
+        self.assertEqual(counts["family_history_count"], 3)
+        self.assertEqual(counts["diabetic_with_family_history"], 2)
+        self.assertEqual(counts["family_healthy"], 2)
+        self.assertEqual(counts["family_healthy_diabetic"], 1)
+        self.assertEqual(counts["family_unhealthy"], 1)
+        self.assertEqual(counts["family_unhealthy_diabetic"], 1)
 
 
 class ReportTests(unittest.TestCase):
     def test_percentage_is_zero_when_the_group_is_empty(self):
-        self.assertEqual(percentage(0, 0), 0.0)
-        self.assertEqual(percentage(1, 2), 50.0)
+        self.assertEqual(percentage((0, 0)), 0.0)
+        self.assertEqual(percentage((1, 2)), 50.0)
 
     def test_empty_family_history(self):
-        self.assertEqual(format_report([0, 0, 0, 0, 0, 0]), diabetes.NO_FAMILY_HISTORY_MESSAGE)
+        self.assertEqual(format_report(diabetes.empty_counts()), diabetes.NO_FAMILY_HISTORY_MESSAGE)
 
     def test_report_matches_the_documented_example(self):
         expected = (
@@ -161,10 +161,24 @@ class ReportTests(unittest.TestCase):
             "This suggests that lifestyle choices significantly affect the "
             "likelihood of diabetes even when family history is present."
         )
-        self.assertEqual(format_report([2, 1, 1, 0, 1, 1]), expected)
+        self.assertEqual(format_report({
+            "family_history_count": 2,
+            "diabetic_with_family_history": 1,
+            "family_healthy": 1,
+            "family_healthy_diabetic": 0,
+            "family_unhealthy": 1,
+            "family_unhealthy_diabetic": 1,
+        }), expected)
 
     def test_rates_round_to_two_decimals(self):
-        report = format_report([3, 1, 3, 1, 0, 0])
+        report = format_report({
+            "family_history_count": 3,
+            "diabetic_with_family_history": 1,
+            "family_healthy": 3,
+            "family_healthy_diabetic": 1,
+            "family_unhealthy": 0,
+            "family_unhealthy_diabetic": 0,
+        })
         self.assertIn("33.33% chance of being diabetic.", report)
         self.assertIn("33.33% were diabetic. Among people", report)
         self.assertIn("an unhealthy lifestyle, 0.0% were diabetic.", report)
@@ -185,8 +199,8 @@ class SurveyFileTests(unittest.TestCase):
         self.assertFalse(row_is_complete(missing))
         self.assertFalse(row_is_complete(blank))
         counts = count_rows(rows)
-        self.assertEqual(counts[0], 1)
-        self.assertEqual(counts[1], 1)
+        self.assertEqual(counts["family_history_count"], 1)
+        self.assertEqual(counts["diabetic_with_family_history"], 1)
 
     def test_diabetes_report_for_a_small_file(self):
         healthy = survey_row({90: "Yes", 208: "No Diabetes"})

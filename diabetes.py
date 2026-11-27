@@ -1,4 +1,4 @@
-RELATIVE_COLUMNS = [90, 91, 92, 93]
+RELATIVE_COLUMNS = (90, 91, 92, 93)
 EXERCISE_DAYS_COLUMN = 105
 DAILY_STEPS_COLUMN = 108
 CALORIE_INTAKE_COLUMN = 114
@@ -96,31 +96,35 @@ def is_unhealthy(exercise_days, daily_steps, calorie_intake, sugar_intake, proce
     return False
 
 
+def empty_counts():
+    """The six counters, stored by name."""
+    return {
+        "family_history_count": 0,
+        "diabetic_with_family_history": 0,
+        "family_healthy": 0,
+        "family_healthy_diabetic": 0,
+        "family_unhealthy": 0,
+        "family_unhealthy_diabetic": 0,
+    }
+
+
 def count_rows(rows):
     """Count family-history cases, split by lifestyle.
 
-    Returns a list:
-    [family history count, diabetic with family history,
-     healthy count, healthy and diabetic,
-     unhealthy count, unhealthy and diabetic]
+    Returns a dictionary of the six counters.
     """
-    family_history_count = 0
-    diabetic_with_family_history = 0
-    family_healthy = 0
-    family_healthy_diabetic = 0
-    family_unhealthy = 0
-    family_unhealthy_diabetic = 0
+    counts = empty_counts()
 
     for row in rows:
         if not row_is_complete(row):
             continue
 
-        relatives = [
+        relatives = (
             row[RELATIVE_COLUMNS[0]],
             row[RELATIVE_COLUMNS[1]],
             row[RELATIVE_COLUMNS[2]],
             row[RELATIVE_COLUMNS[3]],
-        ]
+        )
         status = row[DIABETES_STATUS_COLUMN]
         exercise_days = int(row[EXERCISE_DAYS_COLUMN])
         daily_steps = int(row[DAILY_STEPS_COLUMN])
@@ -131,32 +135,27 @@ def count_rows(rows):
         if not has_family_history(relatives):
             continue
 
-        family_history_count += 1
+        counts["family_history_count"] += 1
         diabetic = is_diabetic(status)
 
         if diabetic:
-            diabetic_with_family_history += 1
+            counts["diabetic_with_family_history"] += 1
 
         if is_unhealthy(exercise_days, daily_steps, calorie_intake, sugar_intake, processed_food_frequency):
-            family_unhealthy += 1
+            counts["family_unhealthy"] += 1
             if diabetic:
-                family_unhealthy_diabetic += 1
+                counts["family_unhealthy_diabetic"] += 1
         else:
-            family_healthy += 1
+            counts["family_healthy"] += 1
             if diabetic:
-                family_healthy_diabetic += 1
+                counts["family_healthy_diabetic"] += 1
 
-    return [
-        family_history_count,
-        diabetic_with_family_history,
-        family_healthy,
-        family_healthy_diabetic,
-        family_unhealthy,
-        family_unhealthy_diabetic,
-    ]
+    return counts
 
 
-def percentage(part, whole):
+def percentage(part_and_whole):
+    """part_and_whole is a tuple: (part, whole)."""
+    part, whole = part_and_whole
     if whole == 0:
         return 0.0
     return (part / whole) * 100
@@ -164,22 +163,21 @@ def percentage(part, whole):
 
 def format_report(counts):
     """Build the sentence report. Matches the original wording, including spacing."""
-    family_history_count = counts[0]
-    diabetic_with_family_history = counts[1]
-    family_healthy = counts[2]
-    family_healthy_diabetic = counts[3]
-    family_unhealthy = counts[4]
-    family_unhealthy_diabetic = counts[5]
-
-    if family_history_count == 0:
+    if counts["family_history_count"] == 0:
         return NO_FAMILY_HISTORY_MESSAGE
 
-    family_history_percentage = percentage(
-        diabetic_with_family_history,
-        family_history_count,
-    )
-    healthy_rate = percentage(family_healthy_diabetic, family_healthy)
-    unhealthy_rate = percentage(family_unhealthy_diabetic, family_unhealthy)
+    family_history_percentage = percentage((
+        counts["diabetic_with_family_history"],
+        counts["family_history_count"],
+    ))
+    healthy_rate = percentage((
+        counts["family_healthy_diabetic"],
+        counts["family_healthy"],
+    ))
+    unhealthy_rate = percentage((
+        counts["family_unhealthy_diabetic"],
+        counts["family_unhealthy"],
+    ))
 
     return (
         f"If a person has at least one diabetic relative, "
