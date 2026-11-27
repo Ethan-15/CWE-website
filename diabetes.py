@@ -9,17 +9,40 @@ DIABETES_STATUS_COLUMN = 208
 NO_FAMILY_HISTORY_MESSAGE = "No valid family-history data was found."
 
 
-def diabetes(filename="diabetes_large_dataset.csv") -> str:
+def family_history_diabetes_chance(filename="diabetes_large_dataset.csv") -> str:
     """
-    Calculate the probability of diabetes given family history,
-    and compare how lifestyle affects that probability.
+    What are the chances you have a family history of diabetes and you have diabetes?
 
-    >>> diabetes()
-    'If a person has at least one diabetic relative, they have a 38.1% chance of being diabetic.Among people with diabetic relatives and a healthy lifestyle, 35.46% were diabetic. Among people with diabetic relatives and an unhealthy lifestyle, 41.9% were diabetic. This suggests that lifestyle choices significantly affect the likelihood of diabetes even when family history is present.'
+    >>> family_history_diabetes_chance()
+    'If a person has at least one diabetic relative, they have a 38.1% chance of being diabetic.'
     """
     rows = read_rows(filename)
     counts = count_rows(rows)
-    return format_report(counts)
+    return format_family_history_chance(counts)
+
+
+def healthy_lifestyle_with_family_history(filename="diabetes_large_dataset.csv") -> str:
+    """
+    How does living a healthy lifestyle reduce risk of diabetes in spite of family history?
+
+    >>> healthy_lifestyle_with_family_history()
+    'Among people with diabetic relatives and a healthy lifestyle, 35.46% were diabetic.'
+    """
+    rows = read_rows(filename)
+    counts = count_rows(rows)
+    return format_healthy_lifestyle_rate(counts)
+
+
+def unhealthy_lifestyle_with_family_history(filename="diabetes_large_dataset.csv") -> str:
+    """
+    How does living an unhealthy lifestyle increase the risk of diabetes when you have a family history of diabetes?
+
+    >>> unhealthy_lifestyle_with_family_history()
+    'Among people with diabetic relatives and an unhealthy lifestyle, 41.9% were diabetic.'
+    """
+    rows = read_rows(filename)
+    counts = count_rows(rows)
+    return format_unhealthy_lifestyle_rate(counts)
 
 
 def read_rows(filename):
@@ -225,19 +248,16 @@ def percentage(part_and_whole):
     return (part / whole) * 100
 
 
-def format_report(counts):
-    """Build the sentence report. Matches the original wording, including spacing.
+def format_family_history_chance(counts):
+    """Answer: chance of diabetes given family history.
 
-    >>> format_report(empty_counts())
+    >>> format_family_history_chance(empty_counts())
     'No valid family-history data was found.'
     >>> sample_counts = empty_counts()
     >>> sample_counts["family_history_count"] = 2
     >>> sample_counts["diabetic_with_family_history"] = 1
-    >>> sample_counts["family_healthy"] = 1
-    >>> sample_counts["family_unhealthy"] = 1
-    >>> sample_counts["family_unhealthy_diabetic"] = 1
-    >>> format_report(sample_counts)
-    'If a person has at least one diabetic relative, they have a 50.0% chance of being diabetic.Among people with diabetic relatives and a healthy lifestyle, 0.0% were diabetic. Among people with diabetic relatives and an unhealthy lifestyle, 100.0% were diabetic. This suggests that lifestyle choices significantly affect the likelihood of diabetes even when family history is present.'
+    >>> format_family_history_chance(sample_counts)
+    'If a person has at least one diabetic relative, they have a 50.0% chance of being diabetic.'
     """
     if counts["family_history_count"] == 0:
         return NO_FAMILY_HISTORY_MESSAGE
@@ -246,24 +266,59 @@ def format_report(counts):
         counts["diabetic_with_family_history"],
         counts["family_history_count"],
     ))
+    return (
+        f"If a person has at least one diabetic relative, "
+        f"they have a {round(family_history_percentage, 2)}% chance of being diabetic."
+    )
+
+
+def format_healthy_lifestyle_rate(counts):
+    """Answer: diabetes rate with family history and a healthy lifestyle.
+
+    >>> format_healthy_lifestyle_rate(empty_counts())
+    'No valid family-history data was found.'
+    >>> sample_counts = empty_counts()
+    >>> sample_counts["family_history_count"] = 2
+    >>> sample_counts["family_healthy"] = 1
+    >>> sample_counts["family_healthy_diabetic"] = 0
+    >>> format_healthy_lifestyle_rate(sample_counts)
+    'Among people with diabetic relatives and a healthy lifestyle, 0.0% were diabetic.'
+    """
+    if counts["family_history_count"] == 0:
+        return NO_FAMILY_HISTORY_MESSAGE
+
     healthy_rate = percentage((
         counts["family_healthy_diabetic"],
         counts["family_healthy"],
     ))
+    return (
+        f"Among people with diabetic relatives and a healthy lifestyle, "
+        f"{round(healthy_rate, 2)}% were diabetic."
+    )
+
+
+def format_unhealthy_lifestyle_rate(counts):
+    """Answer: diabetes rate with family history and an unhealthy lifestyle.
+
+    >>> format_unhealthy_lifestyle_rate(empty_counts())
+    'No valid family-history data was found.'
+    >>> sample_counts = empty_counts()
+    >>> sample_counts["family_history_count"] = 2
+    >>> sample_counts["family_unhealthy"] = 1
+    >>> sample_counts["family_unhealthy_diabetic"] = 1
+    >>> format_unhealthy_lifestyle_rate(sample_counts)
+    'Among people with diabetic relatives and an unhealthy lifestyle, 100.0% were diabetic.'
+    """
+    if counts["family_history_count"] == 0:
+        return NO_FAMILY_HISTORY_MESSAGE
+
     unhealthy_rate = percentage((
         counts["family_unhealthy_diabetic"],
         counts["family_unhealthy"],
     ))
-
     return (
-        f"If a person has at least one diabetic relative, "
-        f"they have a {round(family_history_percentage, 2)}% chance of being diabetic."
-        f"Among people with diabetic relatives and a healthy lifestyle, "
-        f"{round(healthy_rate, 2)}% were diabetic. "
         f"Among people with diabetic relatives and an unhealthy lifestyle, "
-        f"{round(unhealthy_rate, 2)}% were diabetic. "
-        f"This suggests that lifestyle choices significantly affect the "
-        f"likelihood of diabetes even when family history is present."
+        f"{round(unhealthy_rate, 2)}% were diabetic."
     )
 
 
