@@ -15,7 +15,7 @@ def diabetes(filename="diabetes_large_dataset.csv") -> str:
     and compare how lifestyle affects that probability.
 
     >>> diabetes()
-    'If a person has at least one diabetic relative, they have a 50.0% chance of being diabetic.Among people with diabetic relatives and a healthy lifestyle, 0.0% were diabetic. Among people with diabetic relatives and an unhealthy lifestyle, 100.0% were diabetic. This suggests that lifestyle choices significantly affect the likelihood of diabetes even when family history is present.'
+    'If a person has at least one diabetic relative, they have a 38.1% chance of being diabetic.Among people with diabetic relatives and a healthy lifestyle, 35.46% were diabetic. Among people with diabetic relatives and an unhealthy lifestyle, 41.9% were diabetic. This suggests that lifestyle choices significantly affect the likelihood of diabetes even when family history is present.'
     """
     rows = read_rows(filename)
     counts = count_rows(rows)
