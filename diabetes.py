@@ -159,16 +159,16 @@ def count_rows(rows):
 
     Returns a dictionary of the six counters.
 
-    >>> row = ["x"] * 209
-    >>> row[90], row[91], row[92], row[93] = "Yes", "No", "No", "No"
-    >>> row[105], row[108], row[114] = "5", "8000", "2000"
-    >>> row[118], row[125], row[208] = "20", "Sometimes", "No Diabetes"
-    >>> count_rows([row])["family_history_count"]
+    >>> sample_row = ["x"] * 209
+    >>> sample_row[90], sample_row[91], sample_row[92], sample_row[93] = "Yes", "No", "No", "No"
+    >>> sample_row[105], sample_row[108], sample_row[114] = "5", "8000", "2000"
+    >>> sample_row[118], sample_row[125], sample_row[208] = "20", "Sometimes", "No Diabetes"
+    >>> count_rows([sample_row])["family_history_count"]
     1
-    >>> count_rows([row])["family_healthy"]
+    >>> count_rows([sample_row])["family_healthy"]
     1
-    >>> row[90] = "No"
-    >>> count_rows([row])["family_history_count"]
+    >>> sample_row[90] = "No"
+    >>> count_rows([sample_row])["family_history_count"]
     0
     """
     counts = empty_counts()
@@ -230,13 +230,13 @@ def format_report(counts):
 
     >>> format_report(empty_counts())
     'No valid family-history data was found.'
-    >>> counts = empty_counts()
-    >>> counts["family_history_count"] = 2
-    >>> counts["diabetic_with_family_history"] = 1
-    >>> counts["family_healthy"] = 1
-    >>> counts["family_unhealthy"] = 1
-    >>> counts["family_unhealthy_diabetic"] = 1
-    >>> format_report(counts)
+    >>> sample_counts = empty_counts()
+    >>> sample_counts["family_history_count"] = 2
+    >>> sample_counts["diabetic_with_family_history"] = 1
+    >>> sample_counts["family_healthy"] = 1
+    >>> sample_counts["family_unhealthy"] = 1
+    >>> sample_counts["family_unhealthy_diabetic"] = 1
+    >>> format_report(sample_counts)
     'If a person has at least one diabetic relative, they have a 50.0% chance of being diabetic.Among people with diabetic relatives and a healthy lifestyle, 0.0% were diabetic. Among people with diabetic relatives and an unhealthy lifestyle, 100.0% were diabetic. This suggests that lifestyle choices significantly affect the likelihood of diabetes even when family history is present.'
     """
     if counts["family_history_count"] == 0:
