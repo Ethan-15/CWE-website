@@ -14,7 +14,7 @@ def diabetes(filename="diabetes_large_dataset.csv") -> str:
     Calculate the probability of diabetes given family history,
     and compare how lifestyle affects that probability.
 
-    >>>diabetes()
+    >>> diabetes()
     'If a person has at least one diabetic relative, they have a 50.0% chance of being diabetic.Among people with diabetic relatives and a healthy lifestyle, 0.0% were diabetic. Among people with diabetic relatives and an unhealthy lifestyle, 100.0% were diabetic. This suggests that lifestyle choices significantly affect the likelihood of diabetes even when family history is present.'
     """
     rows = read_rows(filename)
@@ -47,7 +47,18 @@ def required_data(row):
 
 
 def row_is_complete(row):
-    """Return False when a required field is blank or '<null>'."""
+    """Return False when a required field is blank or '<null>'.
+
+    >>> sample = ["x"] * 209
+    >>> row_is_complete(sample)
+    True
+    >>> sample[208] = ""
+    >>> row_is_complete(sample)
+    False
+    >>> sample[208] = "<null>"
+    >>> row_is_complete(sample)
+    False
+    """
     data = required_data(row)
     if "<null>" in data or "" in data:
         return False
@@ -55,21 +66,43 @@ def row_is_complete(row):
 
 
 def has_family_history(relatives):
-    """Return True when at least one relative is marked Yes."""
+    """Return True when at least one relative is marked Yes.
+
+    >>> has_family_history(("No", "Yes", "No", "No"))
+    True
+    >>> has_family_history(("No", "No", "No", "No"))
+    False
+    """
     if "Yes" in relatives:
         return True
     return False
 
 
 def is_diabetic(status):
-    """Return True unless the status is exactly 'No Diabetes'."""
+    """Return True unless the status is exactly 'No Diabetes'.
+
+    >>> is_diabetic("No Diabetes")
+    False
+    >>> is_diabetic("Type 2 Diabetes")
+    True
+    """
     if status != "No Diabetes":
         return True
     return False
 
 
 def lifestyle_score(exercise_days, daily_steps, calorie_intake, sugar_intake, processed_food_frequency):
-    """Count unhealthy factors. A score of 3 or more is an unhealthy lifestyle."""
+    """Count unhealthy factors. A score of 3 or more is an unhealthy lifestyle.
+
+    >>> lifestyle_score(5, 8000, 2000, 20, "Sometimes")
+    0
+    >>> lifestyle_score(5, 8000, 2000, 20, "Often")
+    1
+    >>> lifestyle_score(5, 8000, 2000, 20, "Never")
+    1
+    >>> lifestyle_score(0, 1000, 3000, 20, "Sometimes")
+    3
+    """
     score = 0
 
     if exercise_days < 2:
@@ -91,13 +124,26 @@ def lifestyle_score(exercise_days, daily_steps, calorie_intake, sugar_intake, pr
 
 
 def is_unhealthy(exercise_days, daily_steps, calorie_intake, sugar_intake, processed_food_frequency):
+    """Return True when the lifestyle score is 3 or more.
+
+    >>> is_unhealthy(0, 1000, 2000, 20, "Sometimes")
+    False
+    >>> is_unhealthy(0, 1000, 3000, 20, "Sometimes")
+    True
+    """
     if lifestyle_score(exercise_days, daily_steps, calorie_intake, sugar_intake, processed_food_frequency) >= 3:
         return True
     return False
 
 
 def empty_counts():
-    """The six counters, stored by name."""
+    """The six counters, stored by name.
+
+    >>> empty_counts()["family_history_count"]
+    0
+    >>> empty_counts()["family_healthy_diabetic"]
+    0
+    """
     return {
         "family_history_count": 0,
         "diabetic_with_family_history": 0,
@@ -112,6 +158,18 @@ def count_rows(rows):
     """Count family-history cases, split by lifestyle.
 
     Returns a dictionary of the six counters.
+
+    >>> row = ["x"] * 209
+    >>> row[90], row[91], row[92], row[93] = "Yes", "No", "No", "No"
+    >>> row[105], row[108], row[114] = "5", "8000", "2000"
+    >>> row[118], row[125], row[208] = "20", "Sometimes", "No Diabetes"
+    >>> count_rows([row])["family_history_count"]
+    1
+    >>> count_rows([row])["family_healthy"]
+    1
+    >>> row[90] = "No"
+    >>> count_rows([row])["family_history_count"]
+    0
     """
     counts = empty_counts()
 
@@ -154,7 +212,13 @@ def count_rows(rows):
 
 
 def percentage(part_and_whole):
-    """part_and_whole is a tuple: (part, whole)."""
+    """part_and_whole is a tuple: (part, whole).
+
+    >>> percentage((1, 2))
+    50.0
+    >>> percentage((0, 0))
+    0.0
+    """
     part, whole = part_and_whole
     if whole == 0:
         return 0.0
@@ -162,7 +226,19 @@ def percentage(part_and_whole):
 
 
 def format_report(counts):
-    """Build the sentence report. Matches the original wording, including spacing."""
+    """Build the sentence report. Matches the original wording, including spacing.
+
+    >>> format_report(empty_counts())
+    'No valid family-history data was found.'
+    >>> counts = empty_counts()
+    >>> counts["family_history_count"] = 2
+    >>> counts["diabetic_with_family_history"] = 1
+    >>> counts["family_healthy"] = 1
+    >>> counts["family_unhealthy"] = 1
+    >>> counts["family_unhealthy_diabetic"] = 1
+    >>> format_report(counts)
+    'If a person has at least one diabetic relative, they have a 50.0% chance of being diabetic.Among people with diabetic relatives and a healthy lifestyle, 0.0% were diabetic. Among people with diabetic relatives and an unhealthy lifestyle, 100.0% were diabetic. This suggests that lifestyle choices significantly affect the likelihood of diabetes even when family history is present.'
+    """
     if counts["family_history_count"] == 0:
         return NO_FAMILY_HISTORY_MESSAGE
 
@@ -189,3 +265,8 @@ def format_report(counts):
         f"This suggests that lifestyle choices significantly affect the "
         f"likelihood of diabetes even when family history is present."
     )
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
