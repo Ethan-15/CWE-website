@@ -11,16 +11,16 @@ from diabetes import (
     count_rows,
     family_history_diabetes_chance,
     format_family_history_chance,
-    format_healthy_lifestyle_rate,
-    format_unhealthy_lifestyle_rate,
+    format_healthy_rate,
+    format_unhealthy_rate,
     has_family_history,
-    healthy_lifestyle_with_family_history,
+    healthy_family_rate,
     is_diabetic,
     is_unhealthy,
     lifestyle_score,
     percentage,
     row_is_complete,
-    unhealthy_lifestyle_with_family_history,
+    unhealthy_family_rate,
 )
 
 
@@ -154,9 +154,10 @@ class ReportTests(unittest.TestCase):
 
     def test_empty_family_history(self):
         empty = diabetes.empty_counts()
-        self.assertEqual(format_family_history_chance(empty), diabetes.NO_FAMILY_HISTORY_MESSAGE)
-        self.assertEqual(format_healthy_lifestyle_rate(empty), diabetes.NO_FAMILY_HISTORY_MESSAGE)
-        self.assertEqual(format_unhealthy_lifestyle_rate(empty), diabetes.NO_FAMILY_HISTORY_MESSAGE)
+        message = diabetes.NO_FAMILY_HISTORY_MESSAGE
+        self.assertEqual(format_family_history_chance(empty), message)
+        self.assertEqual(format_healthy_rate(empty), message)
+        self.assertEqual(format_unhealthy_rate(empty), message)
 
     def test_each_question_report_matches_its_example(self):
         counts = {
@@ -169,17 +170,16 @@ class ReportTests(unittest.TestCase):
         }
         self.assertEqual(
             format_family_history_chance(counts),
-            "If a person has at least one diabetic relative, "
-            "they have a 50.0% chance of being diabetic.",
+            "With a diabetic relative, chance of diabetes is 50.0%.",
         )
         self.assertEqual(
-            format_healthy_lifestyle_rate(counts),
-            "Among people with diabetic relatives and a healthy lifestyle, "
+            format_healthy_rate(counts),
+            "With family history and a healthy lifestyle, "
             "0.0% were diabetic.",
         )
         self.assertEqual(
-            format_unhealthy_lifestyle_rate(counts),
-            "Among people with diabetic relatives and an unhealthy lifestyle, "
+            format_unhealthy_rate(counts),
+            "With family history and an unhealthy lifestyle, "
             "100.0% were diabetic.",
         )
 
@@ -192,9 +192,18 @@ class ReportTests(unittest.TestCase):
             "family_unhealthy": 0,
             "family_unhealthy_diabetic": 0,
         }
-        self.assertIn("33.33% chance of being diabetic.", format_family_history_chance(counts))
-        self.assertIn("33.33% were diabetic.", format_healthy_lifestyle_rate(counts))
-        self.assertIn("0.0% were diabetic.", format_unhealthy_lifestyle_rate(counts))
+        self.assertIn(
+            "33.33%.",
+            format_family_history_chance(counts),
+        )
+        self.assertIn(
+            "33.33% were diabetic.",
+            format_healthy_rate(counts),
+        )
+        self.assertIn(
+            "0.0% were diabetic.",
+            format_unhealthy_rate(counts),
+        )
 
 
 class SurveyFileTests(unittest.TestCase):
@@ -232,35 +241,26 @@ class SurveyFileTests(unittest.TestCase):
 
         self.assertEqual(
             family_history_diabetes_chance(path),
-            "If a person has at least one diabetic relative, "
-            "they have a 50.0% chance of being diabetic.",
+            "With a diabetic relative, chance of diabetes is 50.0%.",
         )
         self.assertEqual(
-            healthy_lifestyle_with_family_history(path),
-            "Among people with diabetic relatives and a healthy lifestyle, "
+            healthy_family_rate(path),
+            "With family history and a healthy lifestyle, "
             "0.0% were diabetic.",
         )
         self.assertEqual(
-            unhealthy_lifestyle_with_family_history(path),
-            "Among people with diabetic relatives and an unhealthy lifestyle, "
+            unhealthy_family_rate(path),
+            "With family history and an unhealthy lifestyle, "
             "100.0% were diabetic.",
         )
 
     def test_no_family_history_in_the_file(self):
         path = write_survey([survey_row()])
         self.addCleanup(Path(path).unlink)
-        self.assertEqual(
-            family_history_diabetes_chance(path),
-            diabetes.NO_FAMILY_HISTORY_MESSAGE,
-        )
-        self.assertEqual(
-            healthy_lifestyle_with_family_history(path),
-            diabetes.NO_FAMILY_HISTORY_MESSAGE,
-        )
-        self.assertEqual(
-            unhealthy_lifestyle_with_family_history(path),
-            diabetes.NO_FAMILY_HISTORY_MESSAGE,
-        )
+        message = diabetes.NO_FAMILY_HISTORY_MESSAGE
+        self.assertEqual(family_history_diabetes_chance(path), message)
+        self.assertEqual(healthy_family_rate(path), message)
+        self.assertEqual(unhealthy_family_rate(path), message)
 
 
 if __name__ == "__main__":
